@@ -1,10 +1,18 @@
+import { Connection, EntityManager, getConnection, getMongoManager, getMongoRepository } from "typeorm";
 import defaultPagination from "../config/pagination";
 import Pagination from "../types/pagination";
 
 class Model {
     public pagination: Pagination;
+    public connection: Connection;
+    public manager: EntityManager;
+    public repository: any;
+
     constructor(entity?: any) {
         this.pagination = defaultPagination;
+        this.connection = getConnection("default");
+        this.manager = getMongoManager("default");
+        if ( entity ) this.repository = getMongoRepository(entity);
     }
     
     public paginationOptions = (order_by: string, order: string, page: number, size: number) => {

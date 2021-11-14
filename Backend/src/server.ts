@@ -5,23 +5,32 @@ import middlewares from './middlewares';
 import errorHandlers from './exceptions';
 import initRoutes from './utils/init_routes';
 import allRoutes from './services/routes';
+import initMongoConnection from './connection/mongodb';
+import mongoConfig from './config/mongodb';
 
 const app = express();
 
-// initializing all middlewares
-initMiddlewares(middlewares, app);
+initMongoConnection(mongoConfig).then(async (connection) => {
+    // initialzing local variables
+    app.locals.mongoClient = connection;
 
-// initializing all routes
-initRoutes(allRoutes, app)
+    // initializing all middlewares
+    initMiddlewares(middlewares, app);
+    
+    // initializing all routes
+    initRoutes(allRoutes, app)
+    
+    // initialing errors handle middlewares
+    initMiddlewares(errorHandlers, app);
+    
+    // start listening
+    app.listen(server.port, () => {
+        console.log(`${server.name} running on http://${server.host}:${server.port}`);
+    })
 
-// initialing errors handle middlewares
-initMiddlewares(errorHandlers, app);
-
-// start listening
-app.listen(server.port, () => {
-    console.log(`${server.name} running on http://${server.host}:${server.port}`);
+}).catch((error) => {
+    console.log('/* Mongo DB connection */');
 })
-
 process.on('uncaughtException', (e) => {
     console.log(e);
 });

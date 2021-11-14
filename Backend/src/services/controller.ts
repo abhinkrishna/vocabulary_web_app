@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { getMongoRepository } from "typeorm";
 import { SuccessResponses } from "../utils/success";
 
 class Controller extends SuccessResponses {
@@ -19,6 +20,7 @@ class Controller extends SuccessResponses {
         this.body = req.body;
         this.query = req.query;
         if (model) this.model = new model();
+        if (entity) this.repository = getMongoRepository(entity);
     }
 
     protected success200 = async (data: any, message?: string) => {
