@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import defaultPagination from "../../config/pagination";
+import { Exception400, Exception404 } from "../../exceptions/exceptions";
+import OxfordAPIUtility from "../../utils/oxford_utility";
 import Controller from "../controller";
 
 class DictionaryController extends Controller {
+    private oxfordUtility: OxfordAPIUtility;
     constructor(req: Request, res: Response, next: NextFunction) {
         super(req, res, next);
+        this.oxfordUtility = new OxfordAPIUtility();
     }
 
     /**
@@ -12,8 +15,9 @@ class DictionaryController extends Controller {
      * Add details to mongo db 
      */
     public create = async () => {
-        const { word } = this.body
-        this.success201({ word }, 'Successfully added.');
+        const { word } = this.body;
+        const data = await this.proccessData(word);
+        this.success201(data, 'Successfully added.');
     }
 
     /**
@@ -47,6 +51,21 @@ class DictionaryController extends Controller {
     public delete = async () => {
         const { id } = this.params;
         this.success201({ id }, 'Successfully deleted.');
+    }
+
+    /**
+     * @param word : eg. "hello"
+     * @returns data with details fetched from Oxford API
+     */
+    private proccessData = async (word: string) => {
+        let data: any;
+        try {
+            data = await this.oxfordUtility.getEntries(word);
+        } catch (error: any) {
+            if (error.response.status === 404) throw new Exception404(error.response.data.error);
+            else throw new Exception400('Something went wrong.');
+        }
+        return data;
     }
 
 }
