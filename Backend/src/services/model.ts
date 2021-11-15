@@ -1,18 +1,25 @@
 import { Connection, EntityManager, getConnection, getMongoManager, getMongoRepository } from "typeorm";
 import defaultPagination from "../config/pagination";
 import Pagination from "../types/pagination";
+import * as moment from "moment-timezone";
 
 class Model {
     public pagination: Pagination;
     public connection: Connection;
     public manager: EntityManager;
+    public entity: any;
     public repository: any;
+    public currentTimestamp: Date;
 
     constructor(entity?: any) {
         this.pagination = defaultPagination;
         this.connection = getConnection("default");
         this.manager = getMongoManager("default");
-        if ( entity ) this.repository = getMongoRepository(entity);
+        this.currentTimestamp = moment.tz(process.env.SYSTEM_TIMEZONE as string).format() as any;
+        if ( entity ) { 
+            this.repository = getMongoRepository(entity);
+            this.entity = entity;
+        }
     }
     
     public paginationOptions = (order_by: string, order: string, page: number, size: number) => {

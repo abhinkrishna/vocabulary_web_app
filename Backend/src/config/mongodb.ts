@@ -8,12 +8,13 @@ const mongoConfig: ConnectionOptions = {
     synchronize: (process.env.NODE_ENV === "production" ? false : true) as boolean,
     logging: false,
     cache: false,
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
     entities: [
         __dirname + "/../**/*.entity{.ts,.js}",
     ],
     migrations: [],
     subscribers: []
-
 }
 
 export default mongoConfig;
