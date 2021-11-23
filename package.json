@@ -5,7 +5,9 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc-watch --onSuccess \"node ./dist/server.js\""
+    "dev": "tsc-watch --onSuccess \"node ./dist/server.js\"",
+    "build": "tsc",
+    "start": "pm2 start ./dist/server.js"
   },
   "keywords": [],
   "author": "Abhin Krishna K A",
